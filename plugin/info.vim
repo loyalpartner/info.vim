@@ -90,7 +90,8 @@ augroup InfoFiletype
 		\ -complete=customlist,<SID>completeFollow -nargs=?
 		\ Follow call <SID>follow(<q-args>)
 
-	autocmd FileType info command! -buffer -nargs=?
+	autocmd FileType info command! -buffer
+		\ -complete=customlist,<SID>completeGotoNode -nargs=1
 		\ GotoNode call <SID>gotoNode(<q-args>)
 
 	" Look up the reference under the cursor (for cross-references and menus)
@@ -126,6 +127,17 @@ function! s:completeFollow(ArgLead, CmdLine, CursorPos)
 	return s:completePrompt(a:ArgLead, b:info['XRefs'])
 endfunction
 
+function! s:completeGotoNode(ArgLead, CmdLine, CursorPos)
+  let l:file = b:info['File']
+  let l:cmd = 'info --subnodes '. l:file .' | grep -oe "\\*\\s\\(.*\\):" | sort | uniq'
+  let l:raw_candidates = systemlist(l:cmd)
+  let l:candidates = map(l:raw_candidates, {_, v -> substitute(v, '\v*\s([^:]*):.*', '\1', '')})
+
+  if empty(a:ArgLead)
+	return l:candidates
+  endif
+  return filter(l:candidates, {_, val -> match(val, '\v^' . a:ArgLead) != -1})
+endfunction
 
 " 'Info' functions {{{1
 
@@ -573,7 +585,7 @@ function! s:encodeCommand(ref, kwargs)
 		let l:cmd .= ' --file '.shellescape(a:ref['File'])
 	endif
 	if has_key(a:ref, 'Node')
-		let l:cmd .= ' --node '.shellescape(a:ref['Node'])
+		let l:cmd .= ' '.shellescape(a:ref['Node'])
 	endif
 	" The path to the 'doc' directory has been added so we can find the
 	" documents included with the plugin. Output is directed stdout
