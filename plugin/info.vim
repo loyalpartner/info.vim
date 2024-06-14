@@ -23,7 +23,7 @@
 " }}}
 
 if exists('g:loaded_info')
-  finish
+	finish
 endif
 
 
@@ -128,15 +128,15 @@ function! s:completeFollow(ArgLead, CmdLine, CursorPos)
 endfunction
 
 function! s:completeGotoNode(ArgLead, CmdLine, CursorPos)
-  let l:file = b:info['File']
-  let l:cmd = 'info --subnodes '. l:file .' | grep -oe "\\*\\s\\(.*\\):" | sort | uniq'
-  let l:raw_candidates = systemlist(l:cmd)
-  let l:candidates = map(l:raw_candidates, {_, v -> substitute(v, '\v*\s([^:]*):.*', '\1', '')})
+	let l:file = b:info['File']
+	let l:cmd = 'info --subnodes '. l:file .' | grep -oe "\\*\\s\\(.*\\):" | sort | uniq'
+	let l:raw_candidates = systemlist(l:cmd)
+	let l:candidates = map(l:raw_candidates, {_, v -> substitute(v, '\v*\s([^:]*):.*', '\1', '')})
 
-  if empty(a:ArgLead)
-	return l:candidates
-  endif
-  return filter(l:candidates, {_, val -> match(val, '\v^' . a:ArgLead) != -1})
+	if empty(a:ArgLead)
+		return l:candidates
+	endif
+	return filter(l:candidates, {_, val -> match(val, '\v^' . a:ArgLead) != -1})
 endfunction
 
 " 'Info' functions {{{1
@@ -210,7 +210,7 @@ function! s:readReference(ref)
 
 	put =system(l:cmd)
 	" Putting has produced an empty line at the top, remove that
-    silent keepjumps 1delete _
+	silent keepjumps 1delete _
 
 	" Parse the node header
 	let b:info = {}
