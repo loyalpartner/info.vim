@@ -129,9 +129,12 @@ endfunction
 
 function! s:completeGotoNode(ArgLead, CmdLine, CursorPos)
 	let l:file = b:info['File']
-	let l:cmd = 'info --subnodes '. l:file .' | grep -oe "\\*\\s\\(.*\\):" | sort | uniq'
-	let l:raw_candidates = systemlist(l:cmd)
-	let l:candidates = map(l:raw_candidates, {_, v -> substitute(v, '\v*\s([^:]*):.*', '\1', '')})
+	let l:cmd = printf(
+		\'%s --subnodes "%s" | grep -Eoe "^File:\s[^,]+,\s+Node:\s[^,]+" | sed -E "s/^File:\s[^,]+,\s+Node:\s(.+)/\1/" | sort',
+		\info#prog(),
+		\b:info.File
+	\)
+	let l:candidates = systemlist(l:cmd)
 
 	if empty(a:ArgLead)
 		return l:candidates
