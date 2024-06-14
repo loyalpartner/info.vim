@@ -588,7 +588,7 @@ function! s:encodeCommand(ref, kwargs)
 		let l:cmd .= ' --file '.shellescape(a:ref['File'])
 	endif
 	if has_key(a:ref, 'Node')
-		let l:cmd .= ' '.shellescape(a:ref['Node'])
+		let l:cmd .= ' --node '.shellescape(a:ref['Node'])
 	endif
 	" The path to the 'doc' directory has been added so we can find the
 	" documents included with the plugin. Output is directed stdout
